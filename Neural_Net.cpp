@@ -45,11 +45,13 @@ map<int, char> Neural_Net::ALPHABET = {
 };
 
 Neural_Net::Neural_Net(std::vector<int> layer_sizes, double learning_variable, double rand_weight_lower, double rand_weight_upper) {
+    // Constructor
     this->rand_weight_lower = rand_weight_lower;
     this->rand_weight_upper = rand_weight_upper;
     num_layers = (int)layer_sizes.size();
     this->learning_variable = learning_variable;
     for(int i = 0; i < num_layers; i++) {
+        // initialize layers
         layers.push_back(Layer{layer_sizes[i], vector<vector<double>>()});
     }
 }
@@ -120,17 +122,19 @@ void Neural_Net::back_prop_learning(vector<Example> examples, vector<Example> te
                 }
             }
         }
+        // Test 'testing_examples' to measure accuracy.
         accuracy = test_multiple_inputs(testing_examples);
+
         if(!printed)
             cout << '\r' << "Accuracy after " << num_epochs + 1 << " epochs: " << accuracy * 100 << "%";
         if (accuracy >= .9 && !printed) {
-            // ! printed to train to 100% or max_epochs
+            // !printed to train to 100% or max_epochs
             cout << endl << "Accuracy has reached 90% at epoch: " << num_epochs + 1;
             cout << " with a learning rate of " << learning_variable << ".";
             cout << " Finishing training to 100% accuracy or max_epochs." << endl;
             printed = true;
         }
-        if (accuracy >= 1)
+        if (accuracy >= 1) // stop when accuracy reaches 100%
             break;
     }
     cout << "Max accuracy reached after epoch " << num_epochs << ": " << accuracy*100 << "%." << endl;
@@ -239,32 +243,8 @@ double Neural_Net::test_input(std::vector<int> input) {
     return distance(a[num_layers - 1].begin(), max_element(a[num_layers - 1].begin(), a[num_layers - 1].end()));
 }
 
-int Neural_Net::test_single_input(vector<int> input) {
-    vector<vector<double>> in;
-    vector<vector<double>> a;
-    // Initialize vectors.
-    for(int i = 0; i < num_layers; i++) {
-        a.push_back(vector<double>(layers[i].size, 0));
-        in.push_back(vector<double>(layers[i].size, 0));
-    }
-
-    for(int i = 0; i < layers[0].size; i++) {
-        // iterate through input layer
-        a[0][i] = input[i];
-    }
-    for (int l = 1; l < num_layers; l++) {
-        // from first hidden layer to output layer
-        for (int j = 0; j < layers[l].size; j++) {
-            // iterate through all neurons in layer l.
-            in[l][j] = dot_product(a[l-1], l-1, j, true);
-            a[l][j] = activation_func(in[l][j], l, false);
-        }
-    }
-
-    return distance(a[num_layers - 1].begin(), max_element(a[num_layers - 1].begin(), a[num_layers - 1].end()));
-}
-
 double Neural_Net::test_multiple_inputs(vector<Example> examples) {
+    // Public function to test multiple inputs at a time, and returns the average accuracy over all tests.
     double sum = 0;
     double num_examples = examples.size();
     for(auto example : examples) {

@@ -37,13 +37,12 @@ private:
     double dot_product(std::vector<double> a, int l, int j, bool i_first);
     std::vector<double> get_random_doubles(int size, double lower_bound, double upper_bound);
     void initialize_random_weights();
-    double test_input(std::vector<int> input);
 public:
     static std::map<int, char> ALPHABET;
 
     Neural_Net(std::vector<int> sizes, double a, double rand_weight_low, double rand_weight_high);
+    double test_input(std::vector<int> input);
     void back_prop_learning(std::vector<Example> examples, std::vector<Example> testing_examples, int max_epochs);
-    int test_single_input(std::vector<int> input);
     double test_multiple_inputs(std::vector<Example> examples);
 };
 

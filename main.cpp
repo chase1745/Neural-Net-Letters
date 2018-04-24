@@ -15,6 +15,7 @@
 using namespace std;
 
 string hex_to_binary(const string &hex_string) {
+    // Converts hex string to binary string.
     stringstream ss;
     ss << hex << hex_string;
     unsigned n;
@@ -24,6 +25,7 @@ string hex_to_binary(const string &hex_string) {
 }
 
 vector<int> b_string_to_vector(const string &binary_str) {
+    // Converts binary string to vector of ints.
     std::vector<int> binary_vec;
     for(auto str : binary_str) {
         binary_vec.push_back(str - '0'); // Convert '1' or '0' to int.
@@ -33,6 +35,7 @@ vector<int> b_string_to_vector(const string &binary_str) {
 }
 
 vector<Example> get_letters(const string &file_name) {
+    // Gets hex letters from 'examples.txt' and converts them to Example structs.
     vector<Example> examples;
     vector<int> binary;
     string hex;
@@ -75,6 +78,7 @@ vector<Example> get_letters(const string &file_name) {
 }
 
 Example random_bit_flipped_example(int num_bits, Example correct_example) {
+    // flips 'num_bits' random bits for the given example letter.
     srand(time(NULL));
     Example example = correct_example;
     vector<double> correct_input = correct_example.output;
@@ -86,6 +90,7 @@ Example random_bit_flipped_example(int num_bits, Example correct_example) {
 }
 
 vector<int> max_random_bit_flips(vector<Example> examples, Neural_Net network) {
+    // finds the maximum number of randomly flipped bits that each letter in alphabet can handle
     vector<int> max_bits_flipped;
     int num_bits;
 
@@ -94,7 +99,7 @@ vector<int> max_random_bit_flips(vector<Example> examples, Neural_Net network) {
         num_bits = 1;
         while(true) {
             Example example = random_bit_flipped_example(num_bits, examples[i]);
-            if(network.test_single_input(example.input) != i)
+            if(network.test_input(example.input) != i)
                 break;
             else
                 num_bits++;
@@ -105,7 +110,7 @@ vector<int> max_random_bit_flips(vector<Example> examples, Neural_Net network) {
 }
 
 vector<double> average_max_bit_flips(int num_iterations, vector<Example> examples, Neural_Net network) {
-
+    // gets the average number of maximum randomly flipped bits that each letter can handle.
     vector<vector<int>> ave_maxes;
     vector<double> aves;
     for(int i = 0; i < num_iterations; i++) {
@@ -122,14 +127,15 @@ vector<double> average_max_bit_flips(int num_iterations, vector<Example> example
 }
 
 void user_input(Neural_Net network) {
+    // Tests user input and prints which letter the net thinks it is.
     vector<string> raw_inputs;
     vector<int> inputs;
     string input;
     char single_input;
     while(true) {
+        input.clear();
+        inputs.clear();
         cout << "Please enter a 35 bit input representing a 5x7 binary letter (ending with a newline)." << endl;
-        cin.clear();
-        cin.ignore(INT8_MAX);
         getline(cin, input);
         for(int i = 0; i < input.size(); i++) {
             if(input[i] != ' ')
@@ -139,16 +145,20 @@ void user_input(Neural_Net network) {
             cout << endl << "Your input was not 35 bits long (" << inputs.size();
             cout << ") would you like to try again? (Y for yes, N for no) ";
             cin >> single_input;
+            cin.ignore();
+            cin.clear();
             if(single_input == 'Y' || single_input == 'y')
                 continue;
             else
                 break;
         } else {
-            int output_char = network.test_single_input(inputs);
+            int output_char = network.test_input(inputs);
             cout << "The Artificial Neural Network thinks your input represents a(n): " << network.ALPHABET[output_char] << endl;
         }
         cout << "Would you like to give another input? (Y for yes, N for no) " << endl;
         cin >> single_input;
+        cin.ignore();
+        cin.clear();
         if(single_input == 'Y' || single_input == 'y')
             continue;
         else
